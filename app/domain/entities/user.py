@@ -1,7 +1,11 @@
+import enum
 import uuid
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
+
+class AuthProvider(enum.Enum):
+    GOOGLE = "google"
 
 @dataclass
 class CareerProfile:
@@ -30,11 +34,28 @@ class CareerProfile:
 @dataclass
 class User:
     email: str
-    hashed_password: str
     full_name: str
+    avatar_url: str = ""
+    google_sub: str = ""
+    auth_provider: AuthProvider
     is_active: bool = True
     is_verified: bool = False
-    is_superuser: bool = False
     id: uuid.UUID = field(default_factory=uuid.uuid4)
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+
+    @staticmethod
+    def create_google_user(
+        email: str,
+        full_name: str,
+        google_sub: str,
+        avatar_url: str = ""
+    ):
+        return User(
+            email=email,
+            full_name=full_name,
+            google_sub=google_sub,
+            avatar_url=avatar_url,
+            auth_provider=AuthProvider.GOOGLE,
+            is_verified=True
+        )
