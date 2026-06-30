@@ -93,14 +93,14 @@ if [ -f ".env" ]; then
         export "$key=$value"
     done < .env
     log_ok "Loaded environment variables from .env"
-elif [ -f ".env.example" ]; then
-    log_warn "Notice: .env not found. Creating from .env.example..."
-    cp .env.example .env
+elif [ -f ".env.sample" ]; then
+    log_warn "Notice: .env not found. Creating from .env.sample..."
+    cp .env.sample .env
     log_warn "Please review .env and restart if necessary."
 fi
 
 if [ -f "alembic.ini" ]; then
-    log_info "Running database migrations (LOC schema)..."
+    log_info "Running database migrations (GR8BASE schema)..."
     if MIGRATION_OUTPUT=$(python -m alembic upgrade head 2>&1); then
         [ -n "$MIGRATION_OUTPUT" ] && echo "$MIGRATION_OUTPUT"
         log_ok "Migrations complete"
@@ -134,25 +134,19 @@ else
 fi
 
 # Optional first-admin bootstrap for local/dev use.
-if [ "${RUN_ADMIN_BOOTSTRAP_ON_START:-true}" = "true" ]; then
-    if [ -n "${INITIAL_SUPER_ADMIN_EMAIL:-}" ]; then
-        log_info "Running admin bootstrap script..."
-        python -m scripts.admin.bootstrap_super_admin
-        log_ok "Admin bootstrap completed"
+if [ "${RUN_SUPER_ACCOUNT_SETUP_ON_START:-true}" = "true" ]; then
+    if [ -n "${SUPER_EMAIL:-}" ]; then
+        log_info "Running super account setup script..."
+        python -m scripts.setup_super_account
+        log_ok "Super account setup completed"
     else
-        log_warn "RUN_ADMIN_BOOTSTRAP_ON_START=true but INITIAL_SUPER_ADMIN_EMAIL is empty; skipping"
+        log_warn "RUN_SUPER_ACCOUNT_SETUP_ON_START=true but SUPER_EMAIL is empty; skipping"
     fi
 fi
 
-# Optional loan product bootstrap for local/dev use.
-if [ "${RUN_LOAN_PRODUCT_BOOTSTRAP_ON_START:-true}" = "true" ]; then
-    log_info "Running loan product bootstrap script..."
-    python -m scripts.loan.bootstrap_loan_products
-    log_ok "Loan product bootstrap completed"
-fi
 
 # Worker check for Celery (notification system)
-CELERY_APP="app.core.celery_config:celery_app" 
+CELERY_APP="app.core.config.celery_config:celery_app" 
 CELERY_WORKER_ARGS="--loglevel=info --concurrency=4"
 
 case "$(uname -s 2>/dev/null || echo unknown)" in
@@ -163,30 +157,30 @@ case "$(uname -s 2>/dev/null || echo unknown)" in
 esac
 
 # Start Celery worker and beat scheduler for scheduled notifications
-if python -c "from app.core.celery_config import celery_app; from celery.bin import worker" 2>/dev/null; then
+if python -c "from app.core.config.celery_config import celery_app; from celery.bin import worker" 2>/dev/null; then
     log_info "Starting Celery worker and beat scheduler..."
     
     # Kill any existing celery processes
-    pkill -f "celery -A app.core.celery_config worker" >/dev/null 2>&1 || true
-    pkill -f "celery -A app.core.celery_config beat" >/dev/null 2>&1 || true
+    pkill -f "celery -A app.core.config.celery_config worker" >/dev/null 2>&1 || true
+    pkill -f "celery -A app.core.config.celery_config beat" >/dev/null 2>&1 || true
     
     # Start worker in background
-    nohup celery -A app.core.celery_config worker ${CELERY_WORKER_ARGS} > logs/celery_worker.log 2>&1 &
+    nohup celery -A app.core.config.celery_config worker ${CELERY_WORKER_ARGS} > logs/celery_worker.log 2>&1 &
     WORKER_PID=$!
     
     # Start beat scheduler in background
-    nohup celery -A app.core.celery_config beat --loglevel=info > logs/celery_beat.log 2>&1 &
+    nohup celery -A app.core.config.celery_config beat --loglevel=info > logs/celery_beat.log 2>&1 &
     BEAT_PID=$!
     
     log_ok "Celery worker (PID: $WORKER_PID) and beat scheduler (PID: $BEAT_PID) started"
     log_info "View worker logs: tail -f logs/celery_worker.log"
     log_info "View beat logs: tail -f logs/celery_beat.log"
 else
-    log_warn "Celery not available; scheduled notifications will not run"
+    log_warn "Celery not available."
 fi
 
 PORT=${PORT:-9001}
-log_ok "Starting Uvicorn for loc-server on port ${PORT}"
+log_ok "Starting Uvicorn for gr8base-server on port ${PORT}"
 log_info "API Documentation: http://localhost:${PORT}/api/v1/docs"
 
 # Parse CLI args so callers can do: ./start.sh --reload false
