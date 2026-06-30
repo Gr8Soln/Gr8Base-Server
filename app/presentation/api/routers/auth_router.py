@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, status
 from starlette.responses import JSONResponse
+
 from app.application.use_cases import (ConfirmEmailUseCase,
                                        ForgotPasswordUseCase, LoginUseCase,
                                        RefreshTokenUseCase, RegisterUseCase,
@@ -11,20 +12,18 @@ from app.core.exceptions import (AccountAlreadyExistsError,
                                  InvalidTokenError)
 from app.core.utils import error_response, success_response
 from app.presentation.api.dependencies import (
-    get_confirm_email_usecase, get_forgot_password_usecase, get_login_usecase,
-    get_refresh_token_usecase, get_register_usecase,
-    get_resend_confirm_email_usecase, get_reset_password_usecase)
-from app.presentation.api.schemas import (AccountResponse, ConfirmEmailRequest,
-                                          ForgotPasswordRequest, LoginRequest,
-                                          RefreshTokenRequest, RegisterRequest,
-                                          ResendConfirmEmailRequest,
-                                          ResetPasswordRequest, TokenResponse)
-from app.core.logging import logger
+    get_login_usecase, get_refresh_token_usecase)
+from app.presentation.api.schemas import (AccountResponse, LoginRequest, 
+                                         TokenResponse)
+from app.core.logging import get_logger
 from typing import Optional
+
+logger = get_logger()
 
 auth_router = APIRouter(prefix="/auth", tags=["Auth Endpoints"])
 
-def _error_json(message: str, status_code: int, e: Optional[Exception] = None) -> JSONResponse:
+
+def _error_response(message: str, status_code: int, e: Optional[Exception] = None) -> JSONResponse:
     if e:
         logger.error(str(e), exc_info=e)
 
@@ -40,9 +39,7 @@ def _account_response(account) -> AccountResponse:
         email=account.email,
         first_name=account.first_name,
         last_name=account.last_name,
-        phone_number=account.phone_number,
         avatar_url=account.avatar_url,
-        type=account.account_type,
         status=account.status,
         created_at=account.created_at,
         updated_at=account.updated_at,
@@ -72,11 +69,11 @@ async def login(
         return _auth_response(account, tokens, "Login successful")
     
     except InvalidCredentialError as exc:
-        return _error_json(str(exc), status.HTTP_401_UNAUTHORIZED)
+        return _error_response(str(exc), status.HTTP_401_UNAUTHORIZED)
     except EmailNotVerifiedError as exc:
-        return _error_json(str(exc), status.HTTP_403_FORBIDDEN)
+        return _error_response(str(exc), status.HTTP_403_FORBIDDEN)
     except AccountInactiveError as exc:
-        return _error_json(str(exc), status.HTTP_403_FORBIDDEN)
+        return _error_response(str(exc), status.HTTP_403_FORBIDDEN)
     except Exception as exc:
         return _error_json(
             "An error occurred while logging in",

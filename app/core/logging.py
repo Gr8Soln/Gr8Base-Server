@@ -97,6 +97,3 @@ def get_logger():
     Use this everywhere instead of logging.getLogger().
     """
     return logger.bind()
-
-
-logger = get_logger()
