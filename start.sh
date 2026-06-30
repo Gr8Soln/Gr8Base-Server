@@ -25,15 +25,28 @@ log_error() {
 
 log_info "Starting Gr8Base backend development services..."
 
-if ! command -v python3 >/dev/null 2>&1 && ! command -v python >/dev/null 2>&1; then
+# Resolve a working Python binary.
+# On Windows, 'python3' is absent and 'python' may be the MS Store stub
+# (App Execution Alias) which exits non-zero on --version.  Try candidates
+# in order: python3 → py (Windows Launcher) → python.
+PYTHON_BIN=""
+for _candidate in python3 py python; do
+    if command -v "$_candidate" >/dev/null 2>&1; then
+        # Make sure it actually runs (rules out the MS Store stub)
+        if "$_candidate" --version >/dev/null 2>&1; then
+            PYTHON_BIN="$_candidate"
+            break
+        fi
+    fi
+done
+
+if [ -z "$PYTHON_BIN" ]; then
     log_error "Python is not installed or not on PATH."
+    log_warn "On Windows, install Python from https://python.org and ensure 'py' or 'python' is on PATH."
+    log_warn "Also disable 'App Execution Aliases' for python.exe in Settings > Apps > Advanced app settings."
     exit 1
 fi
-
-PYTHON_BIN="python3"
-if ! command -v python3 >/dev/null 2>&1; then
-    PYTHON_BIN="python"
-fi
+log_ok "Using Python binary: $PYTHON_BIN ($("$PYTHON_BIN" --version 2>&1))"
 
 # Use standard .venv path
 VENV_DIR=".venv"
