@@ -1,7 +1,11 @@
-import hashlib
+from pwdlib import PasswordHash
 
-def hash_string(value: str) -> str:
-    return hashlib.sha256(value.encode("utf-8")).hexdigest()
+_hash = PasswordHash.recommended()
 
-def compare_hash(value: str, hash_value: str) -> bool:
-    return hash_string(value) == hash_value
+
+def hash_password(plain: str) -> str:
+    return _hash.hash(plain)
+
+
+def verify_password(plain: str, hashed: str) -> bool:
+    return _hash.verify(plain, hashed)

@@ -21,9 +21,6 @@ from app.infrastructure.services.email.resend_service import ResendEmailService
 app = create_app()
 settings = get_settings()
 
-
-
-
 if __name__ == "__main__":
     uvicorn.run(
         "app.main:app",

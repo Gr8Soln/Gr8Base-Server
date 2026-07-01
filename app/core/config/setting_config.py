@@ -59,6 +59,11 @@ class Settings(BaseSettings):
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/1"
 
 
+    # AI INFRA
+    EMBEDDER: str = 'openai'   # openai | local
+    VECTOR_DB: str = 'qdrant'   # qdrant | pgvector
+
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     @field_validator("DEBUG", mode="before")
