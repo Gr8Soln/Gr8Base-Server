@@ -1,1 +1,0 @@
-from app.presentation.api.routers.auth_router import *

@@ -1,31 +1,66 @@
-import asyncio
-import sys
-from enum import Enum
-from typing import Any
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 
-from fastapi import HTTPException, status
-from pydantic import BaseModel, Field
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-from app.infrastructure.services.email.service import SMTPEmailService
+from app.adapters.api.middleware.error_middleware import domain_exception_handler
+from app.adapters.api.routes import (
+    ats_routes,
+    auth_routes,
+    job_routes,
+    profile_routes,
+    resume_routes,
+)
+from app.adapters.api.schemas.common_schemas import HealthResponse
+from app.domain.exceptions.domain_exceptions import DomainException
+from app.infrastructure.config.settings import settings
+from app.infrastructure.observability.structlog_setup import setup_logging
 
-# Set Windows event loop policy BEFORE anything else (before uvicorn/FastAPI creates the loop)
-if sys.platform == "win32":
-    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
-import uvicorn
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    setup_logging()
+    if settings.sentry_dsn:
+        from app.infrastructure.observability.sentry_setup import setup_sentry
+        setup_sentry()
+    yield
 
-from app.bootstrap import create_app
-from app.core.config import get_settings
-from app.infrastructure.services.email.resend_service import ResendEmailService
+
+def create_app() -> FastAPI:
+    app = FastAPI(
+        title=settings.app_name,
+        version=settings.app_version,
+        debug=settings.debug,
+        lifespan=lifespan,
+        docs_url="/docs" if not settings.is_production else None,
+        redoc_url="/redoc" if not settings.is_production else None,
+    )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"] if settings.is_development else [],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    app.add_exception_handler(DomainException, domain_exception_handler)  # type: ignore[arg-type]
+
+    api_prefix = "/api/v1"
+    app.include_router(auth_routes.router, prefix=f"{api_prefix}/auth", tags=["Auth"])
+    app.include_router(profile_routes.router, prefix=f"{api_prefix}/profile", tags=["Profile"])
+    app.include_router(resume_routes.router, prefix=f"{api_prefix}/resumes", tags=["Resumes"])
+    app.include_router(job_routes.router, prefix=f"{api_prefix}/jobs", tags=["Jobs"])
+    app.include_router(ats_routes.router, prefix=f"{api_prefix}/ats", tags=["ATS"])
+
+    @app.get("/health", response_model=HealthResponse, tags=["System"])
+    async def health_check() -> HealthResponse:
+        return HealthResponse(
+            status="ok",
+            version=settings.app_version,
+            environment=str(settings.app_env),
+        )
+
+    return app
+
 
 app = create_app()
-settings = get_settings()
-
-if __name__ == "__main__":
-    uvicorn.run(
-        "app.main:app",
-        host="0.0.0.0",
-        port=settings.APP_PORT,
-        reload=settings.APP_ENV == "development",
-        reload_dirs=["app"],
-    )
