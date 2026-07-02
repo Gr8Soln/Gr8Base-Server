@@ -44,6 +44,3 @@ Thumbs.db
 # Alembic
 # (keep migrations but not compiled)
 *.pyc
-
-docs/
-reports/
