@@ -1,9 +1,10 @@
 from app.infrastructure.config.normalizer import normalize_database_url
 from app.infrastructure.observability.structlog_setup import get_logger
 from app.infrastructure.queue.celery_app import celery_app
+from app.infrastructure.config.settings import get_settings
 
 logger = get_logger(__name__)
-
+settings = get_settings()
 
 @celery_app.task(
     name="embedding_tasks.generate_resume_embedding",
@@ -21,7 +22,6 @@ def generate_resume_embedding_task(
     from sqlalchemy import text
     from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-    from app.infrastructure.config.settings import settings
     from app.infrastructure.vector.embedding_service import generate_resume_embedding
 
 
@@ -69,7 +69,7 @@ def generate_job_embedding_task(
     from sqlalchemy import text
     from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-    from app.infrastructure.config.settings import settings
+    from app.infrastructure.config.settings import get_settings
     from app.infrastructure.vector.embedding_service import generate_job_embedding
 
     async def _run() -> dict:

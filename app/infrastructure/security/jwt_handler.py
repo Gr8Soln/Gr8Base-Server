@@ -2,8 +2,10 @@ from datetime import UTC, datetime, timedelta
 
 from jose import JWTError, jwt
 
-from app.infrastructure.config.settings import settings
+from app.infrastructure.config.settings import get_settings
 
+
+settings = get_settings()
 
 def create_access_token(subject: str) -> str:
     expire = datetime.now(UTC) + timedelta(minutes=settings.access_token_expire_minutes)

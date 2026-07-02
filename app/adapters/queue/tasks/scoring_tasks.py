@@ -23,7 +23,9 @@ def score_resume_task(self, resume_id: str, job_id: str, user_id: str) -> dict:
     from app.adapters.persistence.repositories.pg_job_repository import PgJobRepository
     from app.adapters.persistence.repositories.pg_resume_repository import PgResumeRepository
     from app.application.use_cases.ats.score_resume import ScoreResumeInput, ScoreResumeUseCase
-    from app.infrastructure.config.settings import settings
+    from app.infrastructure.config.settings import get_settings
+
+    settings = get_settings()
 
     async def _run() -> dict:
         engine = create_async_engine(normalize_database_url(settings.database_url), echo=False)

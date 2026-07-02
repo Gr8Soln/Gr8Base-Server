@@ -26,7 +26,9 @@ def parse_resume_task(self, resume_id: str, user_id: str, raw_text: str) -> dict
     from app.adapters.persistence.repositories.pg_resume_repository import PgResumeRepository
     from app.adapters.queue.tasks.embedding_tasks import generate_resume_embedding_task
     from app.application.use_cases.resume.parse_resume import ParseResumeInput, ParseResumeUseCase
-    from app.infrastructure.config.settings import settings
+    from app.infrastructure.config.settings import get_settings
+
+    settings = get_settings()
 
     async def _run() -> dict:
         engine = create_async_engine(normalize_database_url(settings.database_url), echo=False)

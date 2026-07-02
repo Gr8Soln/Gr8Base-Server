@@ -1,9 +1,9 @@
 from langfuse import Langfuse
 
-from app.infrastructure.config.settings import settings
+from app.infrastructure.config.settings import get_settings
 
 _langfuse_client: Langfuse | None = None
-
+settings = get_settings()
 
 def get_langfuse() -> Langfuse | None:
     global _langfuse_client

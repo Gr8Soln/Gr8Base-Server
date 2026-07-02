@@ -1,9 +1,10 @@
 from openai import AsyncOpenAI
 
-from app.infrastructure.config.settings import settings
+from app.infrastructure.config.settings import get_settings
 from app.infrastructure.observability.structlog_setup import get_logger
 
 logger = get_logger(__name__)
+settings = get_settings()
 
 _client: AsyncOpenAI | None = None
 EMBEDDING_DIMENSIONS = 1536  # text-embedding-3-small

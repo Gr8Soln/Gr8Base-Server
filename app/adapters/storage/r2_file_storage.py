@@ -4,10 +4,11 @@ from botocore.exceptions import ClientError
 
 from app.application.ports.storage.file_storage_port import FileStoragePort
 from app.domain.exceptions.domain_exceptions import StorageError
-from app.infrastructure.config.settings import settings
+from app.infrastructure.config.settings import get_settings
 from app.infrastructure.observability.structlog_setup import get_logger
 
 logger = get_logger(__name__)
+settings = get_settings()
 
 
 class R2FileStorage(FileStoragePort):

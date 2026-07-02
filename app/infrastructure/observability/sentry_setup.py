@@ -3,8 +3,9 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
-from app.infrastructure.config.settings import settings
+from app.infrastructure.config.settings import get_settings
 
+settings = get_settings()
 
 def setup_sentry() -> None:
     if not settings.sentry_dsn:

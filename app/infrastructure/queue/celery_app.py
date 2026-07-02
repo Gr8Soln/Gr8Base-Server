@@ -1,6 +1,8 @@
 from celery import Celery
 
-from app.infrastructure.config.settings import settings
+from app.infrastructure.config.settings import get_settings
+
+settings = get_settings()
 
 celery_app = Celery(
     "ai_ats",

@@ -1,7 +1,8 @@
 import redis.asyncio as aioredis
 
-from app.infrastructure.config.settings import settings
+from app.infrastructure.config.settings import get_settings
 
+settings = get_settings()
 _redis_client: aioredis.Redis | None = None
 
 

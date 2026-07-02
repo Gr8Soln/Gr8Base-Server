@@ -8,10 +8,12 @@ from typing import Any
 
 import litellm
 
-from app.infrastructure.config.settings import settings
+from app.infrastructure.config.settings import get_settings
 from app.infrastructure.observability.structlog_setup import get_logger
 
 logger = get_logger(__name__)
+
+settings = get_settings()
 
 litellm.set_verbose = settings.debug
 

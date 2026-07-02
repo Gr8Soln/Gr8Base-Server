@@ -14,9 +14,11 @@ from app.adapters.api.routes import (
 )
 from app.adapters.api.schemas.common_schemas import HealthResponse
 from app.domain.exceptions.domain_exceptions import DomainException
-from app.infrastructure.config.settings import settings
+from app.infrastructure.config.settings import get_settings
 from app.infrastructure.observability.structlog_setup import setup_logging
 
+
+settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:

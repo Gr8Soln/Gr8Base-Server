@@ -1,9 +1,10 @@
 from app.infrastructure.config.normalizer import normalize_database_url
 from app.infrastructure.observability.structlog_setup import get_logger
 from app.infrastructure.queue.celery_app import celery_app
+from app.infrastructure.config.settings import get_settings
 
 logger = get_logger(__name__)
-
+settings = get_settings()
 
 @celery_app.task(
     name="generation_tasks.optimize_resume",
@@ -31,7 +32,6 @@ def optimize_resume_task(
         OptimizeResumeUseCase,
     )
     from app.domain.enums.resume_strategy import ResumeStrategy
-    from app.infrastructure.config.settings import settings
 
     async def _run() -> dict:
         engine = create_async_engine(normalize_database_url(settings.database_url), echo=False)

@@ -8,8 +8,9 @@ from anthropic import AsyncAnthropic
 from openai import AsyncOpenAI
 from pydantic import BaseModel
 
-from app.infrastructure.config.settings import settings
+from app.infrastructure.config.settings import get_settings
 
+settings = get_settings()
 type ResponseModel[T: BaseModel] = T
 
 _openai_instructor: instructor.AsyncInstructor | None = None

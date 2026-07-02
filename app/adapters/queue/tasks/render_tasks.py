@@ -27,7 +27,9 @@ def generate_pdf_task(self, resume_id: str, user_id: str, template: str = "class
         GeneratePDFInput,
         GenerateResumePDFUseCase,
     )
-    from app.infrastructure.config.settings import settings
+    from app.infrastructure.config.settings import get_settings
+
+    settings = get_settings()
 
     async def _run() -> dict:
         engine = create_async_engine(normalize_database_url(settings.database_url), echo=False)

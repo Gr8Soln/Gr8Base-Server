@@ -3,7 +3,9 @@ from collections.abc import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.infrastructure.config.normalizer import normalize_database_url
-from app.infrastructure.config.settings import settings
+from app.infrastructure.config.settings import get_settings
+
+settings = get_settings()
 
 engine = create_async_engine(
     normalize_database_url(settings.database_url),
