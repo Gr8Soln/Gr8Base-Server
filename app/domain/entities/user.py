@@ -35,11 +35,13 @@ class CareerProfile:
 class User:
     email: str
     full_name: str
-    avatar_url: str = ""
-    google_sub: str = ""
-    auth_provider: AuthProvider
+    hashed_password: str = ""
+    auth_provider: AuthProvider = AuthProvider.GOOGLE
     is_active: bool = True
     is_verified: bool = False
+    is_superuser: bool = False
+    avatar_url: str = ""
+    google_sub: str = ""
     id: uuid.UUID = field(default_factory=uuid.uuid4)
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = field(default_factory=lambda: datetime.now(UTC))
