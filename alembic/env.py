@@ -5,15 +5,22 @@ from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
-from app.infrastructure.config import get_settings, normalize_database_url
+from app.infrastructure.config.settings import get_settings
 from app.infrastructure.database.base import Base
-from app.adapters.persistence.models import *  # noqa: F401,F403
+from app.infrastructure.config.normalizer import normalize_database_url
+
+# Import ALL model files so Alembic's autogenerate detects table metadata
+from app.adapters.persistence.models.ats_model import ATSScoreModel  # noqa: F401,F403
+from app.adapters.persistence.models.career_profile_model import CareerProfileModel  # noqa: F401,F403
+from app.adapters.persistence.models.job_model import JobModel  # noqa: F401,F403
+from app.adapters.persistence.models.resume_model import ResumeModel  # noqa: F401,F403
+from app.adapters.persistence.models.user_model import UserModel  # noqa: F401,F403
 
 
 
 config = context.config
-settings = get_settings()
-config.set_main_option("sqlalchemy.url", normalize_database_url(settings.DATABASE_URL))
+_settings = get_settings()
+config.set_main_option("sqlalchemy.url", normalize_database_url(_settings.database_url))
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)

@@ -1,3 +1,4 @@
+from app.infrastructure.config.normalizer import normalize_database_url
 from app.infrastructure.observability.structlog_setup import get_logger
 from app.infrastructure.queue.celery_app import celery_app
 
@@ -23,11 +24,12 @@ def generate_resume_embedding_task(
     from app.infrastructure.config.settings import settings
     from app.infrastructure.vector.embedding_service import generate_resume_embedding
 
+
     async def _run() -> dict:
         embedding = await generate_resume_embedding(raw_text, skills)
         embedding_str = "[" + ",".join(str(v) for v in embedding) + "]"
 
-        engine = create_async_engine(settings.database_url, echo=False)
+        engine = create_async_engine(normalize_database_url(settings.database_url), echo=False)
         session_factory = async_sessionmaker(engine, expire_on_commit=False)
 
         async with session_factory() as session:
@@ -74,7 +76,7 @@ def generate_job_embedding_task(
         embedding = await generate_job_embedding(raw_text, required_skills)
         embedding_str = "[" + ",".join(str(v) for v in embedding) + "]"
 
-        engine = create_async_engine(settings.database_url, echo=False)
+        engine = create_async_engine(normalize_database_url(settings.database_url), echo=False)
         session_factory = async_sessionmaker(engine, expire_on_commit=False)
 
         async with session_factory() as session:

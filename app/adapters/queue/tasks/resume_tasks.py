@@ -1,3 +1,4 @@
+from app.infrastructure.config.normalizer import normalize_database_url
 from app.infrastructure.observability.structlog_setup import get_logger
 from app.infrastructure.queue.celery_app import celery_app
 
@@ -28,7 +29,7 @@ def parse_resume_task(self, resume_id: str, user_id: str, raw_text: str) -> dict
     from app.infrastructure.config.settings import settings
 
     async def _run() -> dict:
-        engine = create_async_engine(settings.database_url, echo=False)
+        engine = create_async_engine(normalize_database_url(settings.database_url), echo=False)
         session_factory = async_sessionmaker(engine, expire_on_commit=False)
 
         async with session_factory() as session:
