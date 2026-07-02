@@ -42,7 +42,7 @@ class Settings(BaseSettings):
 
     # ── LLM ───────────────────────────────────────────────────────────────────
     openai_api_key: str
-    anthropic_api_key: str
+    anthropic_api_key: str = ""
     llm_primary_model: str = "gpt-4o"
     llm_fallback_model: str = "claude-3-5-sonnet-20241022"
     embedding_model: str = "text-embedding-3-small"
