@@ -10,9 +10,7 @@ from app.infrastructure.database.base import Base
 class CareerProfileModel(Base):
     __tablename__ = "career_profiles"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="CASCADE"),
@@ -36,6 +34,9 @@ class CareerProfileModel(Base):
     target_salary_max: Mapped[int | None] = mapped_column(Integer, nullable=True)
     preferred_work_type: Mapped[str] = mapped_column(String(50), default="", nullable=False)
     writing_tone: Mapped[str] = mapped_column(String(100), default="professional", nullable=False)
+    address: Mapped[str] = mapped_column(String(500), default="", nullable=False)
+    website: Mapped[str] = mapped_column(String(500), default="", nullable=False)
+    summary_embedding: Mapped[list[float] | None] = mapped_column(nullable=True)
     created_at: Mapped[DateTime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
