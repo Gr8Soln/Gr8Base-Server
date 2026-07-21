@@ -43,9 +43,18 @@ class Settings(BaseSettings):
     # ── LLM ───────────────────────────────────────────────────────────────────
     openai_api_key: str
     anthropic_api_key: str = ""
+    deepseek_api_key: str = ""
+    gemini_api_key: str = ""
+    grok_api_key: str = ""
+    llm_provider: str = "openai"
     llm_primary_model: str = "gpt-4o"
     llm_fallback_model: str = "claude-3-5-sonnet-20241022"
     embedding_model: str = "text-embedding-3-small"
+    embedding_provider: str = "openai"
+
+    # ── Search ────────────────────────────────────────────────────────────────
+    search_provider: str = "tavily"
+    tavily_api_key: str = ""
 
     # ── Cloudflare R2 ─────────────────────────────────────────────────────────
     r2_account_id: str

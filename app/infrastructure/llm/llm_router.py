@@ -1,8 +1,3 @@
-"""
-LLM Router — wraps LiteLLM for multi-provider routing.
-All agents use this; never call OpenAI/Anthropic SDKs directly.
-"""
-
 from enum import StrEnum
 from typing import Any
 

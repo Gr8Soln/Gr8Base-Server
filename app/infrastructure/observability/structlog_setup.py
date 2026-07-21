@@ -7,6 +7,7 @@ from app.infrastructure.config.settings import get_settings
 
 settings = get_settings()
 
+
 def setup_logging() -> None:
     log_level = logging.DEBUG if settings.debug else logging.INFO
 

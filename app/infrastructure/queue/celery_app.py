@@ -15,6 +15,7 @@ celery_app = Celery(
         "app.adapters.queue.tasks.embedding_tasks",
         "app.adapters.queue.tasks.analytics_tasks",
         "app.adapters.queue.tasks.render_tasks",
+        "app.adapters.queue.tasks.ingestion_tasks",
     ],
 )
 

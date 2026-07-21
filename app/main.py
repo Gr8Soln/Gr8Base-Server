@@ -8,6 +8,7 @@ from app.adapters.api.middleware.error_middleware import domain_exception_handle
 from app.adapters.api.routes import (
     ats_routes,
     auth_routes,
+    career_routes,
     job_routes,
     profile_routes,
     resume_routes,
@@ -20,11 +21,13 @@ from app.infrastructure.observability.structlog_setup import setup_logging
 
 settings = get_settings()
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     setup_logging()
     if settings.sentry_dsn:
         from app.infrastructure.observability.sentry_setup import setup_sentry
+
         setup_sentry()
     yield
 
@@ -53,6 +56,7 @@ def create_app() -> FastAPI:
     app.include_router(resume_routes.router, prefix=f"{api_prefix}/resumes", tags=["Resumes"])
     app.include_router(job_routes.router, prefix=f"{api_prefix}/jobs", tags=["Jobs"])
     app.include_router(ats_routes.router, prefix=f"{api_prefix}/ats", tags=["ATS"])
+    app.include_router(career_routes.router, prefix=f"{api_prefix}/career", tags=["Career"])
 
     @app.get("/health", response_model=HealthResponse, tags=["System"])
     async def health_check() -> HealthResponse:

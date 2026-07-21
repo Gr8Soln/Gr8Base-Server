@@ -10,11 +10,22 @@ from app.infrastructure.database.base import Base
 from app.infrastructure.config.normalizer import normalize_database_url
 
 # Import ALL model files so Alembic's autogenerate detects table metadata
-from app.adapters.persistence.models.ats_model import ATSScoreModel  # noqa: F401,F403
-from app.adapters.persistence.models.career_profile_model import CareerProfileModel  # noqa: F401,F403
-from app.adapters.persistence.models.job_model import JobModel  # noqa: F401,F403
-from app.adapters.persistence.models.resume_model import ResumeModel  # noqa: F401,F403
-from app.adapters.persistence.models.user_model import UserModel  # noqa: F401,F403
+from app.adapters.persistence.models.ats_model import ATSScoreModel  # noqa: F401
+from app.adapters.persistence.models.award_model import AwardModel  # noqa: F401
+from app.adapters.persistence.models.blog_model import BlogModel  # noqa: F401
+from app.adapters.persistence.models.career_profile_model import CareerProfileModel  # noqa: F401
+from app.adapters.persistence.models.certification_model import CertificationModel  # noqa: F401
+from app.adapters.persistence.models.education_model import EducationModel  # noqa: F401
+from app.adapters.persistence.models.experience_model import ExperienceModel  # noqa: F401
+from app.adapters.persistence.models.ingestion_model import IngestionWorkflowModel  # noqa: F401
+from app.adapters.persistence.models.job_model import JobModel  # noqa: F401
+from app.adapters.persistence.models.language_model import LanguageModel  # noqa: F401
+from app.adapters.persistence.models.project_model import ProjectModel  # noqa: F401
+from app.adapters.persistence.models.publication_model import PublicationModel  # noqa: F401
+from app.adapters.persistence.models.resume_model import ResumeModel  # noqa: F401
+from app.adapters.persistence.models.skill_model import SkillModel  # noqa: F401
+from app.adapters.persistence.models.technology_model import TechnologyModel  # noqa: F401
+from app.adapters.persistence.models.user_model import UserModel  # noqa: F401
 
 
 
