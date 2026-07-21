@@ -1,0 +1,19 @@
+import uuid
+from abc import ABC, abstractmethod
+
+from app.domain.entities.experience import WorkExperience
+
+
+class ExperienceRepository(ABC):
+    @abstractmethod
+    async def create(self, experience: WorkExperience) -> WorkExperience: ...
+    @abstractmethod
+    async def get_by_id(self, experience_id: uuid.UUID) -> WorkExperience | None: ...
+    @abstractmethod
+    async def get_by_user_id(self, user_id: uuid.UUID) -> list[WorkExperience]: ...
+    @abstractmethod
+    async def update(self, experience: WorkExperience) -> WorkExperience: ...
+    @abstractmethod
+    async def delete(self, experience_id: uuid.UUID) -> None: ...
+    @abstractmethod
+    async def bulk_create(self, experiences: list[WorkExperience]) -> list[WorkExperience]: ...
